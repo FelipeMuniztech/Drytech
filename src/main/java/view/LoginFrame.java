@@ -1,4 +1,9 @@
+/*
+ ANTIGA LOGIN FRAME NÃO ESTAMOS USANDO ESSA CLASSE
+
+
 package view;
+
 
 import dao.Conexao;
 import dao.UsuarioDAO;
@@ -62,7 +67,7 @@ public class LoginFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Login realizado com sucesso!");
                 /* Aqui pode abrir a tela principal e fechar a tela de login
                  new MainFrame(conn).setVisible(true);
-                 this.dispose();*/
+                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Usuário ou senha inválidos.",
@@ -76,7 +81,7 @@ public class LoginFrame extends JFrame {
                     JOptionPane.ERROR_MESSAGE);}
     }
 
-}
+}*/
 
 
 

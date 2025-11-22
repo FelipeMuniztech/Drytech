@@ -1,4 +1,9 @@
-package br.com.drytech;
+package view;
+
+import dao.Conexao;
+import dao.UsuarioDAO;
+import model.SessaoUsuario;
+import model.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +16,8 @@ public class LoginUsuario extends JFrame {
     private JPasswordField senhaField;
     private JButton btnLogin;
 
-    public LoginUsuario() {
+
+    public LoginUsuario(Connection conn) {
         setTitle("Login de Usuário");
         setSize(350, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -25,7 +31,9 @@ public class LoginUsuario extends JFrame {
         int y = 0;
         JLabel lblTitulo = new JLabel("Acessar Conta", JLabel.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        gbc.gridx = 0; gbc.gridy = y++; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = y++;
+        gbc.gridwidth = 2;
         panel.add(lblTitulo, gbc);
 
         gbc.gridwidth = 1;
@@ -46,7 +54,8 @@ public class LoginUsuario extends JFrame {
         panel.add(senhaField, gbc);
 
         gbc.gridy = y++;
-        gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
         btnLogin = new JButton("Entrar");
         panel.add(btnLogin, gbc);
 
@@ -62,12 +71,9 @@ public class LoginUsuario extends JFrame {
                     return;
                 }
 
-                String url = "jdbc:mysql://localhost:3306/sistema_curadoria";
-                String usuario = "root";
-                String password = "07132406"; // coloque sua senha do MySQL
 
                 try {
-                    Connection conn = DriverManager.getConnection(url, usuario, password);
+                    Connection conn = Conexao.getConnection();
                     String sql = "SELECT * FROM usuarios WHERE username = ? AND password_hash = ? AND ativo = TRUE";
                     PreparedStatement stmt = conn.prepareStatement(sql);
                     stmt.setString(1, username);
@@ -76,6 +82,13 @@ public class LoginUsuario extends JFrame {
                     ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
                         JOptionPane.showMessageDialog(null, "Login realizado com sucesso!");
+                        UsuarioDAO dao = new UsuarioDAO();
+                        Usuario usuarioEncontrado = dao.buscarPorNome(username);
+                        SessaoUsuario.setUsuarioLogado(usuarioEncontrado);
+                        FeedFrame feed = new FeedFrame();
+                        feed.setVisible(true);
+                        LoginUsuario.this.dispose(); // Fecha o login
+
                         // Aqui você pode abrir o sistema principal ou tela inicial
                     } else {
                         JOptionPane.showMessageDialog(null, "Usuário ou senha incorretos (ou usuário inativo).");
@@ -91,7 +104,12 @@ public class LoginUsuario extends JFrame {
         });
     }
 
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LoginUsuario().setVisible(true));
+        try (Connection conn = Conexao.getConnection()) {
+            SwingUtilities.invokeLater(() -> new LoginUsuario(conn).setVisible(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

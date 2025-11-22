@@ -32,6 +32,10 @@ public class Usuario {
         this.interesses = new ArrayList<>();
     }
 
+    public Usuario() {
+
+    }
+
     public static void main(String[] args) {
         Usuario novo = new Usuario("Ana Silva", 27, "COMUM", "ana123", "senhaAna!@#");
         novo.setAtivo(true);

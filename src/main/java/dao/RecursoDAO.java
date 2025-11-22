@@ -1,8 +1,8 @@
 package dao;
 
+import dao.Conexao;
 import model.Interesses;
 import model.Recurso;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,28 +49,39 @@ public class RecursoDAO {
         }
         return lista;
     }
-
-    public List<Recurso> listarTodos() throws SQLException {
-        List<Recurso> lista = new ArrayList<>();
-        String sql = "SELECT * FROM recursos";
+            //to usando esse método pra fazer a pagina de posts!
+    public List<Recurso> listarTodos(){
+        List<Recurso> recursos = new ArrayList<>();
+        String sql = "SELECT * FROM recursos ORDER BY id DESC";
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Recurso r = new Recurso(
-                        rs.getInt("id"),
-                        rs.getString("titulo"),
-                        rs.getString("autor"),
-                        Interesses.valueOf(rs.getString("categoria")),
-                        rs.getInt("usuario_id"),
-                        rs.getString("url"),
-                        rs.getString("descricao")
-                );
-                lista.add(r);
+                Recurso r = new Recurso();
+                r.setId(rs.getInt("id"));
+                r.setTitulo(rs.getString("titulo"));
+                r.setAutor(rs.getString("autor"));
+                r.setUsuarioId(rs.getInt("usuario_id"));
+                r.setUrl(rs.getString("url"));
+                r.setDescricao(rs.getString("descricao"));
+
+                //tentei puxar as categorias mas n consegui nao manos
+                /*try {
+                    r.setCategoria(Interesses.valueOf(String.valueOf(rs.getInt("categoria_id"))));
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    System.out.println("Categoria inválida no banco: " + rs.getString("categoria_id"));
+                    // r.setCategoria(Interesses.OUTROS); //define um padrão
+                }*/
+
+                recursos.add(r);
             }
+
+        }catch (SQLException e){
+            System.out.println("Erro ao listar recursos: "+ e.getMessage());
+            e.printStackTrace();
         }
-        return lista;
+        return recursos;
     }
 }

@@ -1,7 +1,8 @@
 package br.com.drytech;
 import dao.Conexao;
-import view.LoginFrame;
+import view.LoginUsuario;
 
+import javax.swing.*;
 import java.sql.Connection;
 
 public class Main {
@@ -10,9 +11,8 @@ public class Main {
         Conexao.iniciarBanco();
         System.out.println("Iniciando Banco...");
 
-        try (Connection conexao = Conexao.getConnection()) {
-
-            new LoginFrame(conexao).setVisible(true);
+        try (Connection conn = Conexao.getConnection()) {
+            SwingUtilities.invokeLater(() -> new LoginUsuario(conn).setVisible(true));
         } catch (Exception e) {
             System.out.println("ERRO:" + e.getMessage());
         }

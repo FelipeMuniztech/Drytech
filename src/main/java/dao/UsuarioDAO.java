@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO {
+
     private Connection conn;
+    private Usuario usuario;
 
     public UsuarioDAO() {
         try {
@@ -41,22 +43,26 @@ public class UsuarioDAO {
 
 
     //Buscar por nome
-    //fiz esse metodo pq é oq tinha la na login frame linha 53
-    public Usuario buscarPorNome(String nome) throws SQLException {
-        String sql = "SELECT id, nome, idade, tipo, ativo FROM usuarios WHERE nome = ?";
+
+    public Usuario buscarPorNome(String username) throws SQLException {
+        String sql = "SELECT id, nome, idade, tipo, username, ativo FROM usuarios WHERE username = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nome);
+            stmt.setString(1, username);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Usuario usuario = new Usuario(
-                            rs.getInt("id"),
-                            rs.getString("nome"),
-                            rs.getInt("idade"),
-                            rs.getString("tipo")
-                    );
+                    Usuario usuario = null;
+                    usuario = new Usuario();
+
+                            usuario.setId(rs.getInt("id"));
+                            usuario.setNome(rs.getString("nome"));
+                            usuario.setUsername(rs.getString("username"));
+                            usuario.setIdade(rs.getInt("idade"));
+                            usuario.setTipo(rs.getString("tipo"));
+
                     usuario.setAtivo(rs.getBoolean("ativo"));
-                    carregarInteressesUsuario(usuario);
+                    //carregarInteressesUsuario(usuario);
                     return usuario;
                 }
             }
@@ -90,17 +96,26 @@ public class UsuarioDAO {
 
     // Cadastrar novo usuário
     public void cadastrar(Usuario usuario) throws SQLException {
+        this.usuario = usuario;
         if (usuario.getInteresses().size() > 2) {
             throw new IllegalArgumentException("Usuário pode ter no máximo 2 interesses.");
         }
 
-        String sql = "INSERT INTO usuarios (nome, idade, tipo, ativo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nome, idade, tipo, username, password_hash, ativo) VALUES (?, ?, ?, ?, ?, TRUE)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+        stmt.setString(1, usuario.getNome());
+        stmt.setInt(2, usuario.getIdade());
+        stmt.setString(3, usuario.getTipo());
+        stmt.setString(4, usuario.getUsername());
+        stmt.setString(5, usuario.getPassword());
+
+        /*String sql = "INSERT INTO usuarios (nome, idade, tipo, ativo) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, usuario.getNome());
             stmt.setInt(2, usuario.getIdade());
             stmt.setString(3, usuario.getTipo());
             stmt.setBoolean(4, usuario.isAtivo());
-            stmt.executeUpdate();
+            stmt.executeUpdate();*/
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {

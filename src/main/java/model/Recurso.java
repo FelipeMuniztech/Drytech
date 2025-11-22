@@ -9,6 +9,10 @@ public class Recurso {
     private String url;
     private String descricao;
 
+    public Recurso(int id) {
+        this.id = id;
+    }
+
     public Recurso(int id, String titulo, String autor, Interesses categoria, int usuarioId, String url, String descricao) {
         this.id = id;
         this.titulo = titulo;
@@ -26,6 +30,10 @@ public class Recurso {
         this.usuarioId = usuarioId;
         this.url = url;
         this.descricao = descricao;
+    }
+
+    public Recurso() {
+
     }
 
     // Getters e Setters

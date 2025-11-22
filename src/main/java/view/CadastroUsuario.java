@@ -1,3 +1,9 @@
+package view;
+
+import dao.Conexao;
+import dao.UsuarioDAO;
+import model.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +18,8 @@ public class CadastroUsuario extends JFrame {
     private JPasswordField senhaField;
     private JButton btnCadastrar;
 
-    public CadastroUsuario() {
+
+    public CadastroUsuario(Connection conn) {
         setTitle("Cadastro de Usuário");
         setSize(400, 350);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -97,25 +104,22 @@ public class CadastroUsuario extends JFrame {
                     return;
                 }
 
-                String url = "jdbc:mysql://localhost:3306/sistema_curadoria"; // troque se necessário
-                String usuario = "root"; // troque se necessário
-                String password = "07132406"; // coloque sua senha do mysql
-
-                try {
-                    Connection conn = DriverManager.getConnection(url, usuario, password);
                     String sql = "INSERT INTO usuarios (nome, idade, tipo, username, password_hash, ativo) VALUES (?, ?, ?, ?, ?, TRUE)";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, nome);
-                    stmt.setInt(2, idade);
-                    stmt.setString(3, tipo);
-                    stmt.setString(4, username);
-                    stmt.setString(5, senha); // pode colocar hash da senha aqui futuramente
-
+                    try (   Connection conn = Conexao.getConnection();
+                            PreparedStatement stmt = conn.prepareStatement(sql)){
+                        stmt.setString(1, nome);
+                        stmt.setInt(2, idade);
+                        stmt.setString(3, tipo);
+                        stmt.setString(4, username);
+                        stmt.setString(5, senha);// pode colocar hash da senha aqui futuramente
                     int res = stmt.executeUpdate();
                     if (res > 0) {
                         JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso!");
-                        nomeField.setText(""); idadeField.setText(""); usernameField.setText("");
-                        senhaField.setText(""); tipoBox.setSelectedIndex(0);
+                        nomeField.setText("");
+                        idadeField.setText("");
+                        usernameField.setText("");
+                        senhaField.setText("");
+                        tipoBox.setSelectedIndex(0);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao cadastrar!");
                     }
@@ -124,12 +128,16 @@ public class CadastroUsuario extends JFrame {
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Erro SQL: " + ex.getMessage());
-                }
+                 }
             }
         });
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new CadastroUsuario().setVisible(true));
+        try (Connection conn = Conexao.getConnection()){
+        SwingUtilities.invokeLater(() -> new CadastroUsuario(conn).setVisible(true));
+    } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
