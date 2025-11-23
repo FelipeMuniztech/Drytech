@@ -1,154 +1,254 @@
 package view;
 
 import dao.RecursoDAO;
-import model.Usuario;
 import model.Recurso;
+import model.SessaoUsuario;
+import model.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import model.SessaoUsuario;
-
 public class FeedFrame extends JFrame {
 
     private JPanel panelConteudoFeed;
+
+    // Campos de texto precisam ser acessíveis para limparmos depois de postar
+    private JTextField txtAutor;
+    private JTextField txtTitulo;
+    private JTextArea txtDescricao;
+    private JTextField txtUrl;
+
     public FeedFrame() {
-        // Configurações da janela
-        setTitle("Feed de Posts");
-        setSize(800, 600);
-        setLayout(null); // Ou o layout que você tiver usando
+        // --- 1. CONFIGURAÇÕES DA JANELA ---
+        setTitle("Sistema Curadoria - Feed");
+        setSize(850, 700); // Aumentei um pouco a altura
+        setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Usuario UsuarioEncontrado = SessaoUsuario.getUsuarioLogado();
+        // --- 2. CABEÇALHO (Boas Vindas) ---
+        Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
         JLabel lblBemVindo = new JLabel();
-        lblBemVindo.setBounds(20, 20, 300, 30);
-        lblBemVindo.setFont(new Font("Arial", Font.BOLD, 16));
-
-        if (UsuarioEncontrado != null) {
-            lblBemVindo.setText("Fala, " + UsuarioEncontrado.getUsername() + "! (" + UsuarioEncontrado.getTipo() + ")");
+        if (usuarioLogado != null) {
+            lblBemVindo.setText("Olá, " + usuarioLogado.getUsername() + "! (" + usuarioLogado.getTipo() + ")");
         } else {
-            lblBemVindo.setText("Usuário Desconhecido");
+            lblBemVindo.setText("Modo Visitante");
         }
-        lblBemVindo.setBounds(20, 20, 500, 30);
-        lblBemVindo.setFont(new Font("Arial", Font.BOLD, 16));
+        lblBemVindo.setBounds(20, 10, 500, 20);
+        lblBemVindo.setFont(new Font("Arial", Font.BOLD, 14));
+        lblBemVindo.setForeground(Color.DARK_GRAY);
         add(lblBemVindo);
 
+        // --- 3. ÁREA DE CRIAR NOVO POST (Topo) ---
+        JPanel panelCriar = montarPainelCriacao(usuarioLogado);
+        add(panelCriar);
+
+        // --- 4. ÁREA DE LISTAGEM (Feed) ---
+        // O feed começa logo abaixo da área de criação (y = 240)
         panelConteudoFeed = new JPanel();
         panelConteudoFeed.setLayout(new BoxLayout(panelConteudoFeed, BoxLayout.Y_AXIS));
 
         JScrollPane scrollPane = new JScrollPane(panelConteudoFeed);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBounds(20, 60, 740, 480);
+        // Ajustei a posição para não ficar em cima do formulário
+        scrollPane.setBounds(20, 240, 790, 400);
 
         add(scrollPane);
 
+        // Carrega os dados iniciais
         carregarPosts();
     }
-        // Posiciona na tela (exemplo)
 
+    /**
+     * Monta o painel bonitinho onde o usuário digita os dados
+     */
+    private JPanel montarPainelCriacao(Usuario usuario) {
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setBounds(20, 40, 790, 180); // Fica no topo
+        panel.setBorder(BorderFactory.createTitledBorder("Compartilhar Conhecimento"));
+        panel.setBackground(new Color(245, 245, 245)); // Um cinza bem clarinho
 
+        // Campo Título
+        JLabel lblTit = new JLabel("Título:");
+        lblTit.setBounds(15, 25, 50, 20);
+        panel.add(lblTit);
 
+        txtTitulo = new JTextField();
+        txtTitulo.setBounds(70, 25, 300, 25);
+        panel.add(txtTitulo);
 
+        // Campo Link (URL)
+        JLabel lblUrl = new JLabel("Link:");
+        lblUrl.setBounds(390, 14, 40, 20);
+        panel.add(lblUrl);
 
-        private void carregarPosts(){
-            RecursoDAO dao = new RecursoDAO();
-            List<Recurso> post = dao.listarTodos();
+        txtUrl = new JTextField();
+        txtUrl.setBounds(430, 14, 340, 25);
+        panel.add(txtUrl);
 
-                panelConteudoFeed.removeAll();
+        //  Campo Autor
+        JLabel lblAutor = new JLabel("Autor:");
+        lblAutor.setBounds(390, 40, 40, 20);
+        panel.add(lblAutor);
 
-            for (Recurso recurso : post) {
-                JPanel card = new JPanel();
-                card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-                card.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createTitledBorder(recurso.getTitulo()),
-                        BorderFactory.createEmptyBorder(10,10,10,10)
-                ));
-                card.setBackground(Color.WHITE);
-                card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150)); // Altura fixa, largura estica
+        txtAutor = new JTextField();
+        txtAutor.setBounds(430, 40, 340, 25);
+        panel.add(txtAutor);
 
-                // Adiciona a descrição
-                JTextArea txtDesc = new JTextArea(recurso.getDescricao());
-                txtDesc.setWrapStyleWord(true);
-                txtDesc.setLineWrap(true);
-                txtDesc.setEditable(false); // Só leitura
-                txtDesc.setBackground(null); // Cor do fundo transparente
+        // Campo Descrição
+        JLabel lblDesc = new JLabel("Resumo:");
+        lblDesc.setBounds(15, 67, 60, 20);
+        panel.add(lblDesc);
 
-                // Adiciona a URL (simples)
-                JLabel lblLink = new JLabel("Link: " + recurso.getUrl());
-                lblLink.setForeground(Color.BLUE);
+        txtDescricao = new JTextArea();
+        txtDescricao.setLineWrap(true);
+        JScrollPane scrollDesc = new JScrollPane(txtDescricao);
+        scrollDesc.setBounds(70, 70, 700, 60);
+        panel.add(scrollDesc);
 
-                JLabel lblAutor = new JLabel("Autor: " + recurso.getAutor());
-                lblAutor.setForeground(Color.BLACK);
+        // Botão Postar
+        JButton btnPostar = new JButton("Publicar Recurso");
+        btnPostar.setBounds(620, 135, 150, 35);
+        btnPostar.setBackground(new Color(70, 130, 180)); // Azul SteelBlue
+        btnPostar.setForeground(Color.WHITE);
+        btnPostar.setFont(new Font("Arial", Font.BOLD, 12));
 
-                // Monta o card
-                card.add(txtDesc);
-                card.add(Box.createRigidArea(new Dimension(0, 10))); // Espacinho
-                card.add(lblLink);
-                card.add(lblAutor);
+        // AÇÃO DO BOTÃO
+        btnPostar.addActionListener(e -> acaoSalvarPost(usuario));
 
-                // --- ADICIONA O CARD NO FEED ---
-                panelConteudoFeed.add(card);
-                // Espaço entre um post e outro
-                panelConteudoFeed.add(Box.createRigidArea(new Dimension(0, 15)));
+        panel.add(btnPostar);
 
-                // Atualiza a tela (Obrigatório no Swing depois de adicionar coisas dinamicamente)
-                panelConteudoFeed.revalidate();
-                panelConteudoFeed.repaint();
-            }
-            }
+        return panel;
+    }
 
-
+    /**
+     * Lógica separada para salvar o post
+     */
+    private void acaoSalvarPost(Usuario usuario) {
+        // 1. Validação básica
+        if (txtTitulo.getText().trim().isEmpty() || txtUrl.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha pelo menos Título e Link!");
+            return;
         }
-/*
-        //--- NA HORA DE CRIAR UM POST ---
-        // 1. Cria o campo onde o usuário vai digitar o título
-        JTextField txtTitulo = new JTextField(20); // 20 é a largura visual
-// Se tiver descrição/conteúdo, cria um JTextArea também
 
-        JButton btnPostar = new JButton("Postar");
+        try {
+            // 2. Monta o Objeto (DTO/Model)
+            Recurso novoRecurso = new Recurso();
+            novoRecurso.setTitulo(txtTitulo.getText());
+            novoRecurso.setDescricao(txtDescricao.getText());
+            novoRecurso.setUrl(txtUrl.getText());
+            novoRecurso.setAutor(txtAutor.getText());
+            //novoRecurso.setCategoriaId();
 
-        btnPostar.addActionListener(e -> {
-            // A. VALIDAÇÃO: Não deixa postar vazio
-            String tituloDigitado = txtTitulo.getText();
-
-            if (tituloDigitado.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Escreve alguma coisa aí, pai!");
-                return; // Para o código aqui
+            // Dados automáticos da sessão
+            if (usuario != null) {
+                novoRecurso.setUsuarioId(usuario.getId());
+                novoRecurso.setAutor(usuario.getUsername());
             }
 
-            try {
-                // B. MONTA O OBJETO
-                // Passa o ID do usuário da Sessão
-                Recurso novoPost = new Recurso(UsuarioEncontrado.getId());
-                novoPost.setUsuarioId(SessaoUsuario.getUsuarioLogado().getId());
+            // IMPORTANTE: Definir uma categoria padrão se não tivermos combo box ainda
+              // Descomente e ajuste se seu banco exigir ID valido
 
-                // Passa o texto que veio da caixinha
-                novoPost.setTitulo(tituloDigitado);
-                // novoPost.setConteudo(txtConteudo.getText()); // Se tiver conteúdo
+            // 3. Manda pro Banco
+            RecursoDAO dao = new RecursoDAO();
+            dao.inserir(novoRecurso); // Certifique-se que seu DAO tem esse método
 
-                // C. MANDA PRO BANCO
-                RecursoDAO recDAO = new RecursoDAO();
-                recDAO.inserir(novoPost);
+            // 4. Sucesso
+            JOptionPane.showMessageDialog(this, "Recurso postado com sucesso!");
 
-                // D. SUCESSO E LIMPEZA
-                JOptionPane.showMessageDialog(null, "Postado com sucesso!");
-                txtTitulo.setText(""); // Limpa o campo pro próximo post
+            // Limpa os campos
+            txtTitulo.setText("");
+            txtDescricao.setText("");
+            txtUrl.setText("");
+            txtAutor.setText("");
 
-                // Dica: Aqui você chamaria um método atualizarFeed() pra o post aparecer na hora
+            // 5. ATUALIZA O FEED NA HORA
+            carregarPosts();
 
-            } catch (Exception ex) {
-                // E. TRATAMENTO DE ERRO
-                JOptionPane.showMessageDialog(null, "Erro ao postar: " + ex.getMessage());
-                ex.printStackTrace(); // Mostra o erro no console pra você corrigir
-            }
-        });
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao postar: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
 
-// Adiciona os componentes na tela
-        add(new JLabel("Título do Post:"));
-        add(txtTitulo);
-        add(btnPostar);
-        */
+    private void carregarPosts() {
+        // Limpa o painel antes de recarregar pra não duplicar
+        panelConteudoFeed.removeAll();
 
+        RecursoDAO dao = new RecursoDAO();
+        List<Recurso> posts = dao.listarTodos();
 
+        // Se não tiver posts, avisa
+        if (posts.isEmpty()) {
+            JLabel lblVazio = new JLabel("Nenhum post encontrado. Seja o primeiro!");
+            lblVazio.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panelConteudoFeed.add(Box.createVerticalStrut(20));
+            panelConteudoFeed.add(lblVazio);
+        }
 
+        for (Recurso recurso : posts) {
+            // Criação do Card (igual ao seu código, só ajustei visuais)
+            JPanel card = new JPanel();
+            card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+            card.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(200, 200, 200), 1), // Borda cinza fina
+                    BorderFactory.createEmptyBorder(10, 15, 10, 15) // Margem interna
+            ));
+            card.setBackground(Color.WHITE);
+            // Tamanho máximo fixo na altura (120px), largura infinita
+            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
+            // Título clicável ou destacado
+            JLabel lblTituloCard = new JLabel(recurso.getTitulo());
+            lblTituloCard.setFont(new Font("Arial", Font.BOLD, 14));
+            lblTituloCard.setForeground(new Color(33, 37, 41));
+
+            // Descrição
+            JTextArea txtDesc = new JTextArea(recurso.getDescricao());
+            txtDesc.setWrapStyleWord(true);
+            txtDesc.setLineWrap(true);
+            txtDesc.setEditable(false);
+            txtDesc.setBackground(Color.WHITE);
+            txtDesc.setForeground(Color.GRAY);
+            txtDesc.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            // Rodapé do card (Autor + Link)
+            JPanel panelRodape = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            panelRodape.setBackground(Color.WHITE);
+
+            JLabel lblAutor = new JLabel("Por: " + recurso.getAutor() + "  |  ");
+            lblAutor.setFont(new Font("Arial", Font.ITALIC, 11));
+
+            JLabel lblLink = new JLabel(recurso.getUrl());
+            lblLink.setForeground(Color.BLUE);
+            lblLink.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Mãozinha ao passar o mouse
+
+            panelRodape.add(lblAutor);
+            panelRodape.add(lblLink);
+
+            // Monta o card
+            card.add(lblTituloCard);
+            card.add(Box.createVerticalStrut(5));
+            card.add(txtDesc);
+            card.add(Box.createVerticalGlue()); // Empurra o rodapé pra baixo
+            card.add(panelRodape);
+
+            // Adiciona no Feed
+            panelConteudoFeed.add(card);
+            panelConteudoFeed.add(Box.createVerticalStrut(15)); // Espaço entre cards
+        }
+
+        // Atualiza a tela
+        panelConteudoFeed.revalidate();
+        panelConteudoFeed.repaint();
+    }
+
+    // Main para teste rápido
+    public static void main(String[] args) {
+        // Simula um login para teste visual
+        // SessaoUsuario.setUsuarioLogado(new Usuario(1, "RodrigoDev", "admin@teste.com", "123"));
+        new FeedFrame().setVisible(true);
+    }
+}

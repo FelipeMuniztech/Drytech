@@ -47,7 +47,7 @@ public class Recurso {
     public void setAutor(String autor) { this.autor = autor; }
 
     public Interesses getCategoria() { return categoria; }
-    public void setCategoria(Interesses categoria) { this.categoria = categoria; }
+    public void setCategoriaId(Interesses categoria) { this.categoria = categoria; }
 
     public int getUsuarioId() { return usuarioId; }
     public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }

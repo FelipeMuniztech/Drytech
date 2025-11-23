@@ -17,7 +17,7 @@ public class LoginUsuario extends JFrame {
     private JButton btnLogin;
 
 
-    public LoginUsuario(Connection conn) {
+    public LoginUsuario() {
         setTitle("Login de Usuário");
         setSize(350, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -107,7 +107,7 @@ public class LoginUsuario extends JFrame {
 
     public static void main(String[] args) {
         try (Connection conn = Conexao.getConnection()) {
-            SwingUtilities.invokeLater(() -> new LoginUsuario(conn).setVisible(true));
+            SwingUtilities.invokeLater(() -> new LoginUsuario().setVisible(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

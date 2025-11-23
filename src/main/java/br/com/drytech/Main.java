@@ -1,6 +1,7 @@
 package br.com.drytech;
 import dao.Conexao;
 import view.LoginUsuario;
+import view.TelaInicial;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -12,7 +13,7 @@ public class Main {
         System.out.println("Iniciando Banco...");
 
         try (Connection conn = Conexao.getConnection()) {
-            SwingUtilities.invokeLater(() -> new LoginUsuario(conn).setVisible(true));
+            SwingUtilities.invokeLater(() -> new TelaInicial().setVisible(true));
         } catch (Exception e) {
             System.out.println("ERRO:" + e.getMessage());
         }

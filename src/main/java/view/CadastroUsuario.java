@@ -3,7 +3,7 @@ package view;
 import dao.Conexao;
 import dao.UsuarioDAO;
 import model.Usuario;
-
+import view.LoginUsuario;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +19,7 @@ public class CadastroUsuario extends JFrame {
     private JButton btnCadastrar;
 
 
-    public CadastroUsuario(Connection conn) {
+    public CadastroUsuario() {
         setTitle("Cadastro de Usuário");
         setSize(400, 350);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -99,6 +99,9 @@ public class CadastroUsuario extends JFrame {
                 int idade;
                 try {
                     idade = Integer.parseInt(idadeStr);
+                    LoginUsuario telaLogin = new LoginUsuario();
+                    telaLogin.setVisible(true);
+                    dispose();
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Idade inválida!");
                     return;
@@ -130,12 +133,15 @@ public class CadastroUsuario extends JFrame {
                     JOptionPane.showMessageDialog(null, "Erro SQL: " + ex.getMessage());
                  }
             }
+
+
+
         });
     }
 
     public static void main(String[] args) {
         try (Connection conn = Conexao.getConnection()){
-        SwingUtilities.invokeLater(() -> new CadastroUsuario(conn).setVisible(true));
+        SwingUtilities.invokeLater(() -> new CadastroUsuario().setVisible(true));
     } catch (SQLException e) {
             throw new RuntimeException(e);
         }
