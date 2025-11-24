@@ -4,7 +4,7 @@ import dao.RecursoDAO;
 import model.Recurso;
 import model.SessaoUsuario;
 import model.Usuario;
-
+import java.awt.Desktop;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -263,6 +263,32 @@ public class FeedFrame extends JFrame {
             lblLink.setForeground(Color.BLUE);
             lblLink.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Mãozinha ao passar o mouse
 
+// Adiciona a funcionalidade de clique
+lblLink.addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mouseClicked(java.awt.event.MouseEvent e) {
+        try {
+            // Verifica se o Desktop é suportado e se o link é válido
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                
+                // Abre o link no navegador padrão
+                // Adiciona "http://" se o link não começar com um protocolo
+                String url = recurso.getUrl();
+                if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
+                    url = "http://" + url;
+                }
+                Desktop.getDesktop().browse(new java.net.URI(url));
+            }
+        } catch (Exception ex) {
+            // Exibe um erro se o link não puder ser aberto
+            JOptionPane.showMessageDialog(FeedFrame.this, 
+                                          "Não foi possível abrir o link: " + ex.getMessage(), 
+                                          "Erro de Navegação", 
+                                          JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+}); 
             panelRodape.add(lblAutor);
             panelRodape.add(lblLink);
 
