@@ -40,6 +40,13 @@ public class FeedFrame extends JFrame {
         lblBemVindo.setForeground(Color.DARK_GRAY);
         add(lblBemVindo);
 
+        JButton btnAtualizar = new JButton("Atualizar");
+        btnAtualizar.setBounds(690, 7, 100, 35);
+        btnAtualizar.setBackground(new Color(70, 130, 180)); // Azul SteelBlue
+        btnAtualizar.setForeground(Color.WHITE);
+        btnAtualizar.setFont(new Font("Arial", Font.BOLD, 12));
+        add(btnAtualizar);
+
         // --- 3. ÁREA DE CRIAR NOVO POST (Topo) ---
         JPanel panelCriar = montarPainelCriacao(usuarioLogado);
         add(panelCriar);
@@ -81,31 +88,31 @@ public class FeedFrame extends JFrame {
 
         // Campo Link (URL)
         JLabel lblUrl = new JLabel("Link:");
-        lblUrl.setBounds(390, 14, 40, 20);
+        lblUrl.setBounds(390, 25, 40, 20);
         panel.add(lblUrl);
 
         txtUrl = new JTextField();
-        txtUrl.setBounds(430, 14, 340, 25);
+        txtUrl.setBounds(430, 25, 340, 25);
         panel.add(txtUrl);
 
         //  Campo Autor
-        JLabel lblAutor = new JLabel("Autor:");
+        /*JLabel lblAutor = new JLabel("Autor:");
         lblAutor.setBounds(390, 40, 40, 20);
         panel.add(lblAutor);
 
         txtAutor = new JTextField();
         txtAutor.setBounds(430, 40, 340, 25);
-        panel.add(txtAutor);
+        panel.add(txtAutor);*/
 
         // Campo Descrição
         JLabel lblDesc = new JLabel("Resumo:");
-        lblDesc.setBounds(15, 67, 60, 20);
+        lblDesc.setBounds(15, 60, 60, 20);
         panel.add(lblDesc);
 
         txtDescricao = new JTextArea();
         txtDescricao.setLineWrap(true);
         JScrollPane scrollDesc = new JScrollPane(txtDescricao);
-        scrollDesc.setBounds(70, 70, 700, 60);
+        scrollDesc.setBounds(70, 63, 700, 60);
         panel.add(scrollDesc);
 
         // Botão Postar
@@ -139,38 +146,40 @@ public class FeedFrame extends JFrame {
             novoRecurso.setTitulo(txtTitulo.getText());
             novoRecurso.setDescricao(txtDescricao.getText());
             novoRecurso.setUrl(txtUrl.getText());
-            novoRecurso.setAutor(txtAutor.getText());
-            //novoRecurso.setCategoriaId();
+            //novoRecurso.setCategoriaId("1");
 
             // Dados automáticos da sessão
             if (usuario != null) {
                 novoRecurso.setUsuarioId(usuario.getId());
                 novoRecurso.setAutor(usuario.getUsername());
+            }else{
+                JOptionPane.showMessageDialog(this, "Você precisa estar logado para postar!");
             }
-
-            // IMPORTANTE: Definir uma categoria padrão se não tivermos combo box ainda
-              // Descomente e ajuste se seu banco exigir ID valido
 
             // 3. Manda pro Banco
             RecursoDAO dao = new RecursoDAO();
-            dao.inserir(novoRecurso); // Certifique-se que seu DAO tem esse método
+            dao.inserir(novoRecurso);
 
-            // 4. Sucesso
+
             JOptionPane.showMessageDialog(this, "Recurso postado com sucesso!");
 
             // Limpa os campos
             txtTitulo.setText("");
             txtDescricao.setText("");
             txtUrl.setText("");
-            txtAutor.setText("");
 
-            // 5. ATUALIZA O FEED NA HORA
+            // 5. atualiza o feed
             carregarPosts();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro ao postar: " + ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    private void atualizarPainel() {
+        panelConteudoFeed.removeAll();
+        carregarPosts();
     }
 
     private void carregarPosts() {

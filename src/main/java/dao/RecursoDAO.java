@@ -10,16 +10,16 @@ import java.util.List;
 public class RecursoDAO {
 
     public void inserir(Recurso recurso) throws SQLException {
-        String sql = "INSERT INTO recursos (titulo, autor, categoria, usuario_id, url, descricao) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO recursos (titulo, autor, categoria_id, usuario_id, url, descricao) VALUES (?, ?, 1, ?, ?, ?)";
         try (Connection conn = Conexao.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, recurso.getTitulo());
             stmt.setString(2, recurso.getAutor());
-            stmt.setString(3, recurso.getCategoria().name());
-            stmt.setInt(4, recurso.getUsuarioId());
-            stmt.setString(5, recurso.getUrl());
-            stmt.setString(6, recurso.getDescricao());
+            //stmt.setString(3, "1");
+            stmt.setInt(3, recurso.getUsuarioId());
+            stmt.setString(4, recurso.getUrl());
+            stmt.setString(5, recurso.getDescricao());
             stmt.executeUpdate();
         }
     }
@@ -39,7 +39,7 @@ public class RecursoDAO {
                         rs.getInt("id"),
                         rs.getString("titulo"),
                         rs.getString("autor"),
-                        Interesses.valueOf(rs.getString("categoria")),
+                        //rs.getString("categoria_id"),
                         rs.getInt("usuario_id"),
                         rs.getString("url"),
                         rs.getString("descricao")
