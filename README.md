@@ -101,21 +101,23 @@ Flyway aplicará tudo automaticamente na inicialização.
 
 📂 Estrutura do Projeto
 /src
+ ├── Main/
+ ├── java/
  ├── dao/
- ├── database/
- ├── migrations/
- ├── models/
- ├── ui/
- └── utils/
- 
+ ├── dto/
+ ├── model
+ ├── view/
+ ├── resources/
+ ├── test/
+
 
 ▶️ Como Executar o Projeto
 1. Clone o repositório
-git clone https://github.com/seu-usuario/sistema-curadoria.git
+git clone ( https://github.com/rodrigopousada/Drytech.git )
 
 2. Abra a IDE
 
-IntelliJ, Eclipse ou NetBeans.
+IntelliJ, VS Code, Eclipse ou NetBeans.
 
 3. Certifique-se de ter Java 24
 java --version
@@ -123,13 +125,6 @@ java --version
 4. Execute a classe principal
 Main.java
 
-🧪 Como gerar build (opcional)
-Maven
-mvn clean install
-mvn package
-
-Gradle
-gradle build
 
 
 🔐 Segurança & Ética Digital
