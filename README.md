@@ -8,6 +8,7 @@ O Sistema de Curadoria é uma aplicação construída em Java 24, utilizando Jav
 
 O projeto segue uma estrutura modular sem uso de MVC, priorizando clareza, organização e manutenção direta do código.
 
+ 
 🎯 Objetivo do Sistema
 
 Otimizar e agilizar processos de curadoria
@@ -19,6 +20,7 @@ Filtrar e analisar dados com facilidade
 Seguir princípios de ética digital e IA responsável
 
 Garantir segurança e integridade dos dados
+
 
 🛠️ Tecnologias Utilizadas
 
@@ -65,6 +67,7 @@ Estrutura modular e organizada
  Logs e auditoria
 
  Mecanismos de segurança avançados
+ 
 
 📦 Pré-requisitos
 
@@ -96,6 +99,7 @@ Coloque suas migrations neste caminho:
 
 Flyway aplicará tudo automaticamente na inicialização.
 
+
 📂 Estrutura do Projeto
 /src
  ├── dao/
@@ -104,6 +108,7 @@ Flyway aplicará tudo automaticamente na inicialização.
  ├── models/
  ├── ui/
  └── utils/
+ 
 
 ▶️ Como Executar o Projeto
 1. Clone o repositório
@@ -127,6 +132,7 @@ mvn package
 Gradle
 gradle build
 
+
 🔐 Segurança & Ética Digital
 
 O sistema segue diretrizes como:
@@ -141,12 +147,12 @@ Boas práticas de ética digital
 
 Alinhamento com princípios de IA responsável
 
-📸 Imagens do Sistema
 
-(Insira aqui seus prints quando quiser.)
+📸 Imagens do Sistema
 
 ![Tela Principal](<img width="1349" height="698" alt="unnamed" src="https://github.com/user-attachments/assets/4c24838a-27dd-40a1-9a57-43c3c73ed540" />)
 ![Exemplo de Uso](<img width="1361" height="711" alt="3dcb9b24-faa7-4df8-8270-b4554327493c" src="https://github.com/user-attachments/assets/6c976656-13d9-4982-97ef-ce99d4158e59" />)
+
 
 👥 Equipe do Projeto
 
@@ -161,6 +167,7 @@ Jose Maxsuel Nogueira
 Felipe Francisco Lemos Sales
 
 “Este projeto só foi possível graças ao esforço, dedicação e parceria de toda a equipe envolvida.”
+
 
 🐛 Issues / Bugs
 
